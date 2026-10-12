@@ -21,6 +21,8 @@ jobs:
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
+        with:
+          packages: 'tools platform-tools platforms;android-34 build-tools;34.0.0'
 
       - name: Grant execute permission
         run: chmod +x gradlew || true
@@ -28,31 +30,15 @@ jobs:
       - name: Build Debug APK
         run: |
           if [ -f "./gradlew" ]; then
-            ./gradlew assembleDebug -Darch=arm64
+            ./gradlew assembleDebug -Darch=arm64 --stacktrace
           else
-            gradle assembleDebug -Darch=arm64
+            gradle assembleDebug -Darch=arm64 --stacktrace
           fi
 
-      - name: Sign APK
-        run: |
-          # Cari APK yang dihasilkan
-          APK=$(find . -name "*.apk" -path "*/debug/*" | head -n 1)
-          echo "Found APK: $APK"
-          
-          # Sign dengan debug keystore
-          jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 \
-            -keystore debug.keystore \
-            -storepass android \
-            -keypass android \
-            "$APK" androiddebugkey
-          
-          # Align
-          zipalign -v 4 "\( APK" " \){APK%.apk}-signed.apk" || cp "\( APK" " \){APK%.apk}-signed.apk"
-
-      - name: Upload Signed APK
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: VeyrLauncher-debug-signed
+          name: VeyrLauncher-debug
           path: |
-            **/*-signed.apk
-            **/build/outputs/apk/debug/*.apk
+            **/build/outputs/apk/**/*.apk
+            **/*.apk
