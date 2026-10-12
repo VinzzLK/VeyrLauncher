@@ -22,7 +22,13 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
         with:
-          packages: 'tools platform-tools platforms;android-34 build-tools;34.0.0'
+          accept-android-sdk-licenses: true
+          # Jangan pakai packages yang mengandung 'tools'
+
+      - name: Install required SDK packages
+        run: |
+          sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0" "ndk;25.2.9519653" || true
+          yes | sdkmanager --licenses || true
 
       - name: Grant execute permission
         run: chmod +x gradlew || true
