@@ -129,6 +129,16 @@ object AllSettings : SettingsRegistry() {
     val limitJvmToBigCores = boolSetting("limitJvmToBigCores", true)
 
     /**
+     * Veyr black and blue "HyperOS" style theme (forces dark mode)
+     */
+    val veyrTheme = boolSetting("veyrTheme", true)
+
+    /**
+     * Slowly drifting aurora behind the launcher UI (Veyr theme only)
+     */
+    val veyrAnimatedBackground = boolSetting("veyrAnimatedBackground", true)
+
+    /**
      * 启用着色器日志输出
      */
     val dumpShaders = boolSetting("dumpShaders", false)

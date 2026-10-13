@@ -12,7 +12,8 @@
 int veyr_big_core_count(void);
 
 /*
- * Pins ONLY the calling thread to the big-core mask, once per thread.
+ * Pins ONLY the calling thread to the big-core mask and gives it a slightly higher priority (nice -4),
+ * once per thread.
  * Never call this from the thread that later spawns the JVM: child threads inherit the mask.
  * Set VEYR_PIN_RENDER_THREAD=0 to disable.
  */

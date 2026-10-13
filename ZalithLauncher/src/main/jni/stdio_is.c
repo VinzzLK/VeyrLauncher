@@ -32,7 +32,10 @@ static bool recordBuffer(char* buf, ssize_t len) {
     if (latestlog_fd != -1)
     {
         write(latestlog_fd, buf, len);
-        fdatasync(latestlog_fd);
+        // Veyr: removed the per-chunk fdatasync(). write() already lands in the kernel page cache, which
+        // survives app crashes and lmkd kills; only a kernel panic / power loss could lose it. fdatasync
+        // blocked this thread for milliseconds per chunk, the stdout pipe filled up, and the game thread
+        // then stalled inside System.out when a mod spammed the log.
     }
     return true;
 }
@@ -49,6 +52,7 @@ static void *logger_thread() {
 
     while ((rsize = read(pfd[0], buf, sizeof(buf)-1)) > 0)
     {
+        buf[rsize] = 0x00; // Veyr: terminate BEFORE strstr() in recordBuffer (it used to read stale/uninitialized bytes)
         bool shouldRecordString = recordBuffer(buf, rsize); //record with newline int latestlog
         if (buf[rsize-1]=='\n')
         {
@@ -67,7 +71,7 @@ static void *logger_thread() {
 }
 
 JNIEXPORT void JNICALL
-Java_com_veyrzxo_veyrlauncher_bridge_LoggerBridge_start(JNIEnv *env, __attribute((unused)) jclass clazz, jstring logPath) {
+Java_com_movtery_zalithlauncher_bridge_LoggerBridge_start(JNIEnv *env, __attribute((unused)) jclass clazz, jstring logPath) {
     if (latestlog_fd != -1)
     {
         int localfd = latestlog_fd;
@@ -77,7 +81,7 @@ Java_com_veyrzxo_veyrlauncher_bridge_LoggerBridge_start(JNIEnv *env, __attribute
 
     if (logger_onEventLogged == NULL)
     {
-        jclass eventLogListener = (*env)->FindClass(env, "com/veyrzxo/veyrlauncher/bridge/LoggerBridge$EventLogListener");
+        jclass eventLogListener = (*env)->FindClass(env, "com/movtery/zalithlauncher/bridge/LoggerBridge$EventLogListener");
         logger_onEventLogged = (*env)->GetMethodID(env, eventLogListener, "onEventLogged", "(Ljava/lang/String;)V");
     }
 
@@ -89,6 +93,9 @@ Java_com_veyrzxo_veyrlauncher_bridge_LoggerBridge_start(JNIEnv *env, __attribute
 
     /* create the pipe and redirect stdout and stderr */
     pipe(pfd);
+#ifdef F_SETPIPE_SZ
+    fcntl(pfd[1], F_SETPIPE_SZ, 1024 * 1024); // Veyr: best effort, a bigger pipe absorbs log bursts without blocking the game
+#endif
     dup2(pfd[1], 1);
     dup2(pfd[1], 2);
 
@@ -147,7 +154,7 @@ _Noreturn void nominal_exit(int code, bool is_signal) {
     while(1) {}
 }
 
-JNIEXPORT void JNICALL Java_com_veyrzxo_veyrlauncher_bridge_LoggerBridge_append(JNIEnv *env, __attribute((unused)) jclass clazz, jstring text) {
+JNIEXPORT void JNICALL Java_com_movtery_zalithlauncher_bridge_LoggerBridge_append(JNIEnv *env, __attribute((unused)) jclass clazz, jstring text) {
     jsize appendStringLength = (*env)->GetStringUTFLength(env, text);
     char newChars[appendStringLength+2];
     (*env)->GetStringUTFRegion(env, text, 0, (*env)->GetStringLength(env, text), newChars);
@@ -158,7 +165,7 @@ JNIEXPORT void JNICALL Java_com_veyrzxo_veyrlauncher_bridge_LoggerBridge_append(
 }
 
 JNIEXPORT void JNICALL
-Java_com_veyrzxo_veyrlauncher_bridge_LoggerBridge_setListener(JNIEnv *env, __attribute((unused)) jclass clazz, jobject log_listener) {
+Java_com_movtery_zalithlauncher_bridge_LoggerBridge_setListener(JNIEnv *env, __attribute((unused)) jclass clazz, jobject log_listener) {
     jobject logListenerLocal = logListener;
 
     if (log_listener == NULL) logListener = NULL;
@@ -169,10 +176,10 @@ Java_com_veyrzxo_veyrlauncher_bridge_LoggerBridge_setListener(JNIEnv *env, __att
 }
 
 JNIEXPORT void JNICALL
-Java_com_veyrzxo_veyrlauncher_bridge_ZLBridge_setupExitMethod(JNIEnv *env, jclass clazz,
+Java_com_movtery_zalithlauncher_bridge_ZLBridge_setupExitMethod(JNIEnv *env, jclass clazz,
                                                         jobject context) {
     exitTrap_ctx = (*env)->NewGlobalRef(env,context);
     (*env)->GetJavaVM(env,&exitTrap_jvm);
-    exitTrap_exitClass = (*env)->NewGlobalRef(env,(*env)->FindClass(env,"com/veyrzxo/veyrlauncher/bridge/ZLNativeInvoker"));
+    exitTrap_exitClass = (*env)->NewGlobalRef(env,(*env)->FindClass(env,"com/movtery/zalithlauncher/bridge/ZLNativeInvoker"));
     exitTrap_exitMethod = (*env)->GetStaticMethodID(env, exitTrap_exitClass, "jvmExit", "(IZ)V");
 }

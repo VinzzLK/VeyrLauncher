@@ -20,6 +20,7 @@ LOCAL_CFLAGS += -rdynamic
 LOCAL_SRC_FILES := \
     bigcoreaffinity.c \
     adpf.c \
+    framestats.c \
     egl_bridge.c \
     ctxbridges/br_loader.c \
     ctxbridges/gl_bridge.c \

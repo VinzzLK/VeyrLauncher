@@ -6,12 +6,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/resource.h>
+#include <sys/syscall.h>
 #include <unistd.h>
 
 #include "bigcoreaffinity.h"
 
 #define VEYR_MAX_CPUS 64
 #define VEYR_BIG_PERCENT 70
+#define VEYR_RENDER_NICE (-4) // mild: HWUI RenderThread runs at -10; ordinary threads stay at 0
 
 static pthread_once_t g_detectOnce = PTHREAD_ONCE_INIT;
 static cpu_set_t g_bigMask;
@@ -75,6 +78,13 @@ void veyr_pin_render_thread(void) {
     if (env != NULL && env[0] == '0') {
         printf("veyr/bigcore: render thread pinning disabled\n");
         return;
+    }
+
+    // Slightly higher scheduling priority for this thread only. Failure (EACCES on some ROMs) is harmless.
+    if (setpriority(PRIO_PROCESS, (id_t) syscall(__NR_gettid), VEYR_RENDER_NICE) != 0) {
+        printf("veyr/bigcore: could not raise render thread priority: %s\n", strerror(errno));
+    } else {
+        printf("veyr/bigcore: render thread nice set to %d\n", VEYR_RENDER_NICE);
     }
 
     int big = veyr_big_core_count();

@@ -926,14 +926,18 @@
     <string name="settings_renderer_vsync_in_zink_title">Zink Vsync</string>
     <string name="settings_renderer_vsync_in_zink_summary">Enable vertical sync for the Zink renderer via the system interface</string>
     <string name="veyr_pin_render_thread_title" translatable="false">Pin render thread to big cores</string>
-    <string name="veyr_pin_render_thread_summary" translatable="false">Keeps only the render thread on the fast CPU cores (prime + gold) so it never lands on the slow little cores. Does not cap FPS</string>
+    <string name="veyr_pin_render_thread_summary" translatable="false">Keeps the thread that draws frames on the fast CPU cores (prime + gold) and gives it slightly higher priority, so heavy scenes cannot push it onto the slow little cores. Mostly improves 1% lows and smoothness. Does not cap FPS. Ignored on phones whose CPU cores are all the same speed.</string>
     <string name="veyr_adpf_title" translatable="false">Performance hints (ADPF)</string>
-    <string name="veyr_adpf_summary" translatable="false">Tells Android 13+ how long each frame takes so it raises CPU frequency earlier and reduces frame spikes. Does nothing on older Android</string>
+    <string name="veyr_adpf_summary" translatable="false">Reports every frame time to Android 13+ so it raises CPU speed before a slow frame instead of after. The target is 600 FPS so the boost stays on at 400+ FPS, and it eases off by itself when the phone reports heat. Costs some extra heat. Does nothing on Android 12 and below.</string>
     <string name="veyr_jvm_big_cores_title" translatable="false">Limit JVM threads to big cores</string>
-    <string name="veyr_jvm_big_cores_summary" translatable="false">Sizes the JVM and the game worker pools for the big cores only, instead of all 8 cores. Applies on the next game launch</string>
+    <string name="veyr_jvm_big_cores_summary" translatable="false">Sizes Java\'s GC, JIT and the game worker threads for the fast cores only (4 on Snapdragon 870) instead of all 8. Fewer threads fight over CPU time, but chunk loading and JIT warm-up can be slightly slower. Applies on the next game launch.</string>
     <string name="veyr_unofficial_modified_version" translatable="false">Unofficial Modified Version</string>
+    <string name="veyr_theme_title" translatable="false">Veyr theme (HyperOS style)</string>
+    <string name="veyr_theme_summary" translatable="false">Black and blue gradient look with large rounded corners and translucent glass cards. Forces dark mode and replaces the color theme and dark mode options below. Turn it off to return to the classic look.</string>
+    <string name="veyr_animated_bg_title" translatable="false">Animated aurora background</string>
+    <string name="veyr_animated_bg_summary" translatable="false">Slowly drifting blue light behind the launcher. It freezes automatically while the game runs, when the launcher is in the background, in Battery Saver, or when system animations are off. Has no effect when you use a custom background image.</string>
     <string name="settings_renderer_surface_title">Use SurfaceView Rendering</string>
-    <string name="settings_renderer_surface_summary">Renders using a separate layer outside the UI</string>
+    <string name="settings_renderer_surface_summary">Draws the game on its own system layer (SurfaceView) instead of inside the app\'s UI (TextureView). Frames skip the UI compositor, which can give higher FPS, lower input latency and less heat. Turn it off if the game screen turns black, flickers, or breaks when resizing or in split-screen.</string>
     <string name="settings_game_version_isolation_title">Global Version Isolation</string>
     <string name="settings_game_version_isolation_summary">Isolates all versions so that their data does not interfere with each other</string>
     <string name="settings_game_skip_game_integrity_check_title">Skip Integrity Check</string>

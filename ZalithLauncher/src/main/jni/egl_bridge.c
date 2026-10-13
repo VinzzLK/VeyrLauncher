@@ -18,6 +18,7 @@
 #include "driver_helper/nsbypass.h"
 #include "bigcoreaffinity.h"
 #include "adpf.h"
+#include "framestats.h"
 
 #ifdef GLES_TEST
 #include <GLES2/gl2.h>
@@ -79,7 +80,7 @@ EXTERNAL_API void pojavTerminate() {
     }
 }
 
-JNIEXPORT void JNICALL Java_com_veyrzxo_veyrlauncher_bridge_ZLBridge_setupBridgeWindow(JNIEnv* env, ABI_COMPAT jclass clazz, jobject surface) {
+JNIEXPORT void JNICALL Java_com_movtery_zalithlauncher_bridge_ZLBridge_setupBridgeWindow(JNIEnv* env, ABI_COMPAT jclass clazz, jobject surface) {
     // 首个窗口由 pojavInit 应用交换间隔；此处处理窗口重建（旋转、分屏等）：
     // 生产者状态会随新窗口重置，若不重新应用，MC 不会再次发起交换间隔调用，帧率会退回锁定在屏幕刷新率
     bool windowRecreated = pojav_environ->pojavWindow != NULL;
@@ -92,7 +93,7 @@ JNIEXPORT void JNICALL Java_com_veyrzxo_veyrlauncher_bridge_ZLBridge_setupBridge
 }
 
 JNIEXPORT void JNICALL
-Java_com_veyrzxo_veyrlauncher_bridge_ZLBridge_releaseBridgeWindow(ABI_COMPAT JNIEnv *env, ABI_COMPAT jclass clazz) {
+Java_com_movtery_zalithlauncher_bridge_ZLBridge_releaseBridgeWindow(ABI_COMPAT JNIEnv *env, ABI_COMPAT jclass clazz) {
     ANativeWindow_release(pojav_environ->pojavWindow);
 }
 
@@ -322,6 +323,7 @@ void calculateFPS() {
     // Veyr: runs once per frame on the render thread for both the GL and the Vulkan paths.
     veyr_pin_render_thread();
     adpf_frame_tick();
+    framestats_tick();
 
     frameCount++;
     time_t currentTime = time(NULL);
