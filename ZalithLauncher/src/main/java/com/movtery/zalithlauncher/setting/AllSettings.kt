@@ -134,6 +134,16 @@ object AllSettings : SettingsRegistry() {
     val veyrTheme = boolSetting("veyrTheme", true)
 
     /**
+     * FPS manip: multiplies the FPS NUMBER shown in the game menu (display only, real FPS is untouched)
+     */
+    val fpsManip = boolSetting("fpsManip", false)
+
+    /**
+     * FPS manip multiplier, 1x to 10x
+     */
+    val fpsManipMultiplier = intSetting("fpsManipMultiplier", 2, 1..10)
+
+    /**
      * Slowly drifting aurora behind the launcher UI (Veyr theme only)
      */
     val veyrAnimatedBackground = boolSetting("veyrAnimatedBackground", true)

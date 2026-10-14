@@ -44,16 +44,11 @@ enum class DarkMode(val textRes: Int) {
 @Composable
 fun isLauncherInDarkTheme(): Boolean {
     val value = AllSettings.launcherDarkMode.state
-    val veyr = AllSettings.veyrTheme.state
-    return key(value, veyr) {
-        if (veyr) {
-            true
-        } else {
-            when (value) {
-                DarkMode.Enable -> true
-                DarkMode.Disable -> false
-                DarkMode.FollowSystem -> isSystemInDarkTheme()
-            }
+    return key(value) {
+        when (value) {
+            DarkMode.Enable -> true
+            DarkMode.Disable -> false
+            DarkMode.FollowSystem -> isSystemInDarkTheme()
         }
     }
 }

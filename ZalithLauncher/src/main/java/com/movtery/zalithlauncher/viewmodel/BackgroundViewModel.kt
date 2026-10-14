@@ -39,7 +39,6 @@ import androidx.lifecycle.viewModelScope
 import com.movtery.zalithlauncher.context.copyLocalFile
 import com.movtery.zalithlauncher.path.PathManager
 import com.movtery.zalithlauncher.setting.AllSettings
-import com.movtery.zalithlauncher.ui.theme.LocalVeyrBackdrop
 import com.movtery.zalithlauncher.setting.enums.BackgroundBlur
 import com.movtery.zalithlauncher.utils.image.isImageFile
 import com.movtery.zalithlauncher.utils.video.isVideoFile
@@ -213,7 +212,7 @@ fun <E> influencedByBackground(
     enabled: Boolean = true
 ): E {
     return if (enabled) {
-        if (LocalBackgroundViewModel.current?.isValid == true || LocalVeyrBackdrop.current) {
+        if (LocalBackgroundViewModel.current?.isValid == true) {
             influenced
         } else {
             value

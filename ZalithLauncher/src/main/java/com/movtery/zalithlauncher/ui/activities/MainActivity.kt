@@ -75,8 +75,6 @@ import com.movtery.zalithlauncher.ui.screens.main.MainScreen
 import com.movtery.zalithlauncher.ui.screens.main.crashlogs.LogShareMenu
 import com.movtery.zalithlauncher.ui.screens.main.crashlogs.LogShareMenuOperation
 import com.movtery.zalithlauncher.ui.screens.main.crashlogs.ShareLinkOperation
-import com.movtery.zalithlauncher.ui.theme.LocalVeyrBackdrop
-import com.movtery.zalithlauncher.ui.theme.VeyrAurora
 import com.movtery.zalithlauncher.ui.theme.ZalithLauncherTheme
 import com.movtery.zalithlauncher.ui.theme.festivals.FestivalEffects
 import com.movtery.zalithlauncher.ui.theme.festivals.FestivalTapObserver
@@ -310,8 +308,7 @@ class MainActivity : BaseAppCompatActivity() {
         setContent {
             ZalithLauncherTheme(
                 backgroundViewModel = backgroundViewModel,
-                festivals = festivals,
-                veyrBackdrop = true
+                festivals = festivals
             ) {
                 ObserveFullScreenSetting(AllSettings.launcherFullScreen.state)
 
@@ -320,10 +317,6 @@ class MainActivity : BaseAppCompatActivity() {
                     guides.mainScreen,
                     nextTip = { NextTipLabel(it) }
                 ) {
-                    if (LocalVeyrBackdrop.current) {
-                        VeyrAurora(modifier = Modifier.fillMaxSize())
-                    }
-
                     Background(
                         modifier = Modifier.fillMaxSize(),
                         viewModel = backgroundViewModel

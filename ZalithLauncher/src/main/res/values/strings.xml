@@ -932,6 +932,8 @@
     <string name="veyr_jvm_big_cores_title" translatable="false">Limit JVM threads to big cores</string>
     <string name="veyr_jvm_big_cores_summary" translatable="false">Sizes Java\'s GC, JIT and the game worker threads for the fast cores only (4 on Snapdragon 870) instead of all 8. Fewer threads fight over CPU time, but chunk loading and JIT warm-up can be slightly slower. Applies on the next game launch.</string>
     <string name="veyr_unofficial_modified_version" translatable="false">Unofficial Modified Version</string>
+    <string name="veyr_fps_manip_title" translatable="false">FPS manip</string>
+    <string name="veyr_fps_manip_multiplier" translatable="false">FPS manip multiplier (display only)</string>
     <string name="veyr_theme_title" translatable="false">Veyr theme (HyperOS style)</string>
     <string name="veyr_theme_summary" translatable="false">Black and blue gradient look with large rounded corners and translucent glass cards. Forces dark mode and replaces the color theme and dark mode options below. Turn it off to return to the classic look.</string>
     <string name="veyr_animated_bg_title" translatable="false">Animated aurora background</string>

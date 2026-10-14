@@ -107,7 +107,6 @@ import com.movtery.zalithlauncher.ui.screens.content.navigateToDownload
 import com.movtery.zalithlauncher.ui.screens.navigateTo
 import com.movtery.zalithlauncher.ui.screens.onBack
 import com.movtery.zalithlauncher.ui.screens.rememberTransitionSpec
-import com.movtery.zalithlauncher.ui.theme.LocalVeyrBackdrop
 import com.movtery.zalithlauncher.ui.theme.backgroundColor
 import com.movtery.zalithlauncher.ui.theme.cardColor
 import com.movtery.zalithlauncher.ui.theme.festivals.FestivalTitleText
@@ -162,13 +161,9 @@ fun MainScreen(
     val isBackgroundValid = LocalBackgroundViewModel.current?.isValid == true
     val launcherBackgroundOpacity = AllSettings.launcherBackgroundOpacity.state.toFloat() / 100f
 
-    val veyrBackdrop = LocalVeyrBackdrop.current
-
-    val backgroundColor = when {
-        isBackgroundValid -> backgroundColor().copy(alpha = launcherBackgroundOpacity)
-        veyrBackdrop -> backgroundColor().copy(alpha = 0.55f)
-        else -> backgroundColor()
-    }
+    val backgroundColor = if (isBackgroundValid) {
+        backgroundColor().copy(alpha = launcherBackgroundOpacity)
+    } else backgroundColor()
 
     Surface(
         modifier = Modifier.fillMaxSize(),

@@ -153,31 +153,6 @@ fun LauncherSettingsScreen(
                 .padding(all = 12.dp),
             isVisible = isVisible
         ) { scope ->
-            //Veyr 主题
-            AnimatedItem(scope) { yOffset ->
-                SettingsCardColumn(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .offset { IntOffset(x = 0, y = yOffset.roundToPx()) }
-                ) {
-                    SwitchSettingsCard(
-                        modifier = Modifier.fillMaxWidth(),
-                        position = CardPosition.Top,
-                        unit = AllSettings.veyrTheme,
-                        title = stringResource(R.string.veyr_theme_title),
-                        summary = stringResource(R.string.veyr_theme_summary)
-                    )
-
-                    SwitchSettingsCard(
-                        modifier = Modifier.fillMaxWidth(),
-                        position = CardPosition.Bottom,
-                        unit = AllSettings.veyrAnimatedBackground,
-                        title = stringResource(R.string.veyr_animated_bg_title),
-                        summary = stringResource(R.string.veyr_animated_bg_summary)
-                    )
-                }
-            }
-
             AnimatedItem(scope) { yOffset ->
                 SettingsCardColumn(
                     modifier = Modifier

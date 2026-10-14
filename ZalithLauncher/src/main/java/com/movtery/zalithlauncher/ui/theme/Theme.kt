@@ -606,7 +606,6 @@ fun ZalithLauncherTheme(
     dynamicColor: Boolean = true,
     backgroundViewModel: BackgroundViewModel? = null,
     festivals: List<Festival> = emptyList(),
-    veyrBackdrop: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorTheme = AllSettings.launcherColorTheme.state
@@ -616,19 +615,13 @@ fun ZalithLauncherTheme(
 
     val context = LocalContext.current
 
-    val veyrOn = AllSettings.veyrTheme.state
-    val isDark = darkTheme || veyrOn
-    val veyrCustomBackground = backgroundViewModel?.isValid == true
-
-    val targetColorScheme = remember(isDark, veyrOn, dynamicColor, colorTheme, customColor, customPaletteStyle) {
+    val targetColorScheme = remember(darkTheme, dynamicColor, colorTheme, customColor, customPaletteStyle) {
         when {
-            veyrOn -> veyrDark
-
             dynamicColor && colorTheme == ColorThemeType.DYNAMIC && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-                if (isDark) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+                if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
             }
 
-            isDark -> when (colorTheme) {
+            darkTheme -> when (colorTheme) {
                 ColorThemeType.EMBERMIRE -> embermireDark
                 ColorThemeType.VELVET_ROSE -> velvetRoseDark
                 ColorThemeType.MISTWAVE -> mistwaveDark
@@ -660,14 +653,14 @@ fun ZalithLauncherTheme(
         }
     }
 
-    var currentDarkTheme by remember { mutableStateOf(isDark) }
+    var currentDarkTheme by remember { mutableStateOf(darkTheme) }
     var currentDisplayScheme by remember { mutableStateOf(targetColorScheme) }
 
-    LaunchedEffect(isDark, targetColorScheme) {
-        if (isDark != currentDarkTheme) {
+    LaunchedEffect(darkTheme, targetColorScheme) {
+        if (darkTheme != currentDarkTheme) {
             context.activeMaskView(
                 maskComplete = {
-                    currentDarkTheme = isDark
+                    currentDarkTheme = darkTheme
                     currentDisplayScheme = targetColorScheme
                 },
                 maskAnimFinish = {
@@ -675,31 +668,20 @@ fun ZalithLauncherTheme(
                 }
             )
         } else {
-            currentDarkTheme = isDark
+            currentDarkTheme = darkTheme
             currentDisplayScheme = targetColorScheme
         }
     }
 
     CompositionLocalProvider(
         LocalBackgroundViewModel provides backgroundViewModel,
-        LocalFestivals provides festivals,
-        LocalVeyrBackdrop provides (veyrOn && veyrBackdrop && !veyrCustomBackground)
+        LocalFestivals provides festivals
     ) {
-        if (veyrOn) {
-            MaterialExpressiveTheme(
-                colorScheme = currentDisplayScheme,
-                motionScheme = MotionScheme.expressive(),
-                shapes = veyrShapes,
-                typography = AppTypography,
-                content = content
-            )
-        } else {
-            MaterialExpressiveTheme(
-                colorScheme = currentDisplayScheme,
-                motionScheme = MotionScheme.expressive(),
-                typography = AppTypography,
-                content = content
-            )
-        }
+        MaterialExpressiveTheme(
+            colorScheme = currentDisplayScheme,
+            motionScheme = MotionScheme.expressive(),
+            typography = AppTypography,
+            content = content
+        )
     }
 }
